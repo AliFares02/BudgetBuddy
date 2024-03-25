@@ -1,10 +1,14 @@
 import React, { useContext, useEffect, useState } from 'react'
 import AuthContext from '../context/AuthContext'
 import axios from 'axios'
+import PieChart from '../components/PieChart'
+import LineGraph from '../components/LineGraph'
+import { Link } from 'react-router-dom'
 
 const HomePage = () => {
   const [expenses, setExpenses] = useState([])
   const {authTokens, logoutUser} = useContext(AuthContext)
+  let expensesTotal = 0
 
   const getExpenses = async () => {
     axios.get('http://127.0.0.1:8000/api/expenses/', {
@@ -12,7 +16,7 @@ const HomePage = () => {
         'Authorization': 'Bearer ' + String(authTokens.access)
       },
     }).then(response => {
-      console.log(response);
+      console.log('get expenses response', response);
       setExpenses(response.data)
     }).catch(error => {
       console.error(error)
@@ -20,10 +24,12 @@ const HomePage = () => {
     })
   }
 
-  const createExpense = async () => {
+  const createExpense = async (event) => {
+    event?.preventDefault();
+    console.log('create expense method called');
     axios.post('http://127.0.0.1:8000/api/create-expense/', {
-    'expense': '202.23',
-    'expense_category': 'medical',
+    'expense': event?.target.elements.expenseAmount.value,
+    'expense_category': event?.target.elements.expenseCategory.value,
     'date': '1969-05-05'
   }, {
     headers: {
@@ -46,6 +52,10 @@ const HomePage = () => {
     return yyyy_mm_dd;
   };
 
+  expenses.map(expense => {
+     expensesTotal += parseFloat(expense.expense)
+  })
+
   useEffect(() => {
     getExpenses()
   }, [])
@@ -55,16 +65,20 @@ const HomePage = () => {
       <div>
         <h1 style={{color:'white'}}>Dashboard</h1>
       </div>
-      <div className='graphs-container' style={{display:'flex', gap:'10px'}}>
-        <div style={{display:'flex', justifyContent:'center', alignItems:'center'}} className='pie-chart-div'>
-          <p>Spenditure pie chart</p>
-          <ul>
-          {expenses.map(expense => {
-            return <li key={expense.id}>${expense.expense}</li>
-          })}
-          </ul>
-          <div >
-            <form className='add-expense-form'>
+      <div className='dashboard-content-container' style={{display:'flex', justifyContent:'center', alignItems:'center', flexDirection:'column', gap:'8px'}}>
+        <div className='graph-div' style={{display:'flex', gap:'8px'}}>
+          <div className='pie-div'>
+            <PieChart expenses={expenses}/>
+            <h3>Total: ${expensesTotal.toFixed(2)}</h3>
+          </div>
+          <div className='line-graph-div'>
+          <LineGraph/>
+          </div>
+        </div>
+        <div className='add-expense-div'>
+          <div style={{display:'flex', alignItems:'center', flexDirection:'column', gap:'5px'}}>
+            <label htmlFor='add-expense-form' style={{fontWeight:'bold', fontSize:'18px'}}>Add expense</label>
+            <form className='add-expense-form' onSubmit={(e) => createExpense(e)}>
               <label htmlFor="number">Enter purchase amount: $</label>
               <input required style={{outline: 'none', borderRadius: '5px', border: 'none', padding: '5px'}} type="text" pattern="[0-9]*[.,]?[0-9]+" title="Please enter a valid number" name='expenseAmount'/>
 
@@ -84,18 +98,14 @@ const HomePage = () => {
                 <option value="others">Others</option>
               </select>
 
-              <input onClick={(e) => createExpense()} type="submit" className='expense-submit-button'/>
+              <input style={{cursor:'pointer'}} type="submit" value="Submit" className='expense-submit-button'/>
             </form>
           </div>
         </div>
-
-        <div className='graph-div'>
-          last 30 days of purchases graph
-        </div>
         
       </div>
-      <div>
-       Enter a purchase here
+      <div style={{marginTop:'8px', marginBottom:'5px'}}>
+        <Link><button className='budget-optimization-button'>Budget Optimization</button></Link>
       </div>
     
       

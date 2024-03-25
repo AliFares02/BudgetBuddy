@@ -120,12 +120,12 @@ a{
   align-items: center;
 }
 
-@media screen and (max-width: 500px) {
-  .graphs-container {
+@media screen and (max-width: 775px) {
+  .graph-div {
     flex-direction: column;
   }
 }
-.pie-chart-div{
+.add-expense-div{
   max-width: fit-content;
   max-height: fit-content;
   display: flex;
@@ -153,12 +153,33 @@ a{
   color: black;
 } 
 
-.graph-div{
+.line-graph-div, .pie-div{
   max-width: fit-content;
   max-height: fit-content;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   padding: 10px;
   background-color: #141414;
   border: 2px solid #ff6f61;
   border-radius: 5px;
+  color: white;
+}
+
+
+
+.budget-optimization-button{
+  width: fit-content;
+  height: 35px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  background-color: #ff6f61;
+  transition: background-color .15s, color .15s;
+}
+
+.budget-optimization-button:hover{
+  background-color: black;
   color: white;
 }

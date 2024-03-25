@@ -54,6 +54,7 @@ export const AuthProvider = ({children}) => {
         headers: {
           'Content-Type': 'application/json'
         }}).then(response => {
+          console.log('updated token', response);
           setAuthTokens(response.data)
           setUser(jwtDecode(response.data.access))
           localStorage.setItem('authTokens', JSON.stringify(response.data))
@@ -74,7 +75,7 @@ export const AuthProvider = ({children}) => {
       if (authTokens) {
         updateToken()
       }
-    }, 1000 * 60 * 4)
+    }, 1000 * 60 * 5)
     return () => clearInterval(intervaleId)
   }, [authTokens, loading])
 
