@@ -7,7 +7,8 @@ import {
   LinearScale, // y axis
   PointElement,
   Legend,
-  Tooltip
+  Tooltip,
+  Filler 
 } from 'chart.js';
 
 ChartJS.register(
@@ -16,7 +17,8 @@ ChartJS.register(
   LinearScale, 
   PointElement,
   Legend,
-  Tooltip
+  Tooltip,
+  Filler 
 )
 
 const LineGraph = () => {
@@ -29,8 +31,8 @@ const LineGraph = () => {
         backgroundColor: '#ff6f61',
         borderColor: 'black',
         pointBorderColor: 'white',
-        fill: true,
-        tension: .25,
+        fill: 'origin',
+        tension: .1,
         borderWidth: 1
       }
     ]
@@ -94,9 +96,7 @@ const LineGraph = () => {
   }
   return (
     <div style={{ width: '350px', height: '350px' }}>
-      <Line data={data} options={options}>
-
-      </Line>
+      <Line data={data} options={options}/>
     </div>
   )
 }

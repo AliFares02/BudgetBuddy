@@ -8,6 +8,7 @@ const AuthContext = createContext();
 export default AuthContext;
 
 export const AuthProvider = ({children}) => {
+  const [sharedCategArray, setSharedCategArray] = useState([])
   
   localStorage.getItem('authTokens')
   const [authTokens, setAuthTokens] = useState(() => {
@@ -80,6 +81,8 @@ export const AuthProvider = ({children}) => {
   }, [authTokens, loading])
 
   const contextData = {
+    sharedCategArray:sharedCategArray,
+    setSharedCategArray:setSharedCategArray,
     user:user,
     authTokens:authTokens,
     loginUser:loginUser,

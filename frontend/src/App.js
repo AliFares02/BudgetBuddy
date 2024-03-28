@@ -5,6 +5,8 @@ import LoginPage from './pages/LoginPage';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import PrivateRoute from './utils/PrivateRoute';
 import { AuthProvider } from './context/AuthContext';
+import BudgetOptimizationPage from './pages/BudgetOptimizationPage';
+
 
 function App() {
   return (
@@ -12,10 +14,13 @@ function App() {
       <BrowserRouter>
         <AuthProvider>
           <Header/>
-          <Routes>
-            <Route path='/' element={<PrivateRoute><HomePage/></PrivateRoute>}/>
-            <Route path='/login' element={<LoginPage/>}/>
-          </Routes>
+           
+              <Routes>
+                <Route path='/login' element={<LoginPage/>}/>
+                <Route path='/' element={<PrivateRoute><HomePage/></PrivateRoute>}/>
+                <Route path='/budget-optimization' element={<PrivateRoute><BudgetOptimizationPage/></PrivateRoute>}/>
+              </Routes>
+          
         </AuthProvider> 
       </BrowserRouter>
     </div>

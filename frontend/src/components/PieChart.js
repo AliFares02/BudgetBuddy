@@ -1,8 +1,11 @@
-import React, { useState } from 'react'
-import {Bar, Pie} from 'react-chartjs-2'
-import { Chart as ChartJS } from 'chart.js/auto'
+import React, { useContext, useEffect } from 'react'
+import { Pie } from 'react-chartjs-2'
+import {Chart, ArcElement} from 'chart.js'
+import AuthContext from '../context/AuthContext';
+Chart.register(ArcElement);
 
 const PieChart = ({expenses}) => {
+  const {sharedCategArray, setSharedCategArray} = useContext(AuthContext)
   const expenseCategoriesForPieChart = []
   const expenseCategoryColorsForPieChart = []
   const expenseCategoryAmountForPieChart = []
@@ -43,6 +46,11 @@ const PieChart = ({expenses}) => {
       expenseCategoryColorsForPieChart.push(pieChartData[key][2])
     }
   }
+  useEffect(() => {
+    setSharedCategArray(expenseAmountPerCategory);
+    localStorage.setItem('sharedCategArray', JSON.stringify(sharedCategArray))
+  }, [expenses]);
+
   console.log('expenseCategoriesForPieChart', expenseCategoriesForPieChart);
   console.log('expenseCategoryAmountForPieChart', expenseCategoryAmountForPieChart);
   console.log('expenseCategoryColorsForPieChart', expenseCategoryColorsForPieChart);

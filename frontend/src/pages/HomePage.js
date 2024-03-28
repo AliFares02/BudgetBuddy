@@ -68,25 +68,32 @@ const HomePage = () => {
       <div className='dashboard-content-container' style={{display:'flex', justifyContent:'center', alignItems:'center', flexDirection:'column', gap:'8px'}}>
         <div className='graph-div' style={{display:'flex', gap:'8px'}}>
           <div className='pie-div'>
+            {/* make this div a link so that when it is clicked it takes you to expenses page wher u can delete/edit an expense */}
             <PieChart expenses={expenses}/>
             <h3>Total: ${expensesTotal.toFixed(2)}</h3>
+            <Link><button className='more-category-info-button'>More Category Info</button></Link>
           </div>
           <div className='line-graph-div'>
-          <LineGraph/>
+            <LineGraph/>
+            <Link><button className='more-category-info-button'>More Expense History Info</button></Link>
           </div>
         </div>
         <div className='add-expense-div'>
           <div style={{display:'flex', alignItems:'center', flexDirection:'column', gap:'5px'}}>
             <label htmlFor='add-expense-form' style={{fontWeight:'bold', fontSize:'18px'}}>Add expense</label>
             <form className='add-expense-form' onSubmit={(e) => createExpense(e)}>
-              <label htmlFor="number">Enter purchase amount: $</label>
-              <input required style={{outline: 'none', borderRadius: '5px', border: 'none', padding: '5px'}} type="text" pattern="[0-9]*[.,]?[0-9]+" title="Please enter a valid number" name='expenseAmount'/>
+              <label htmlFor="number">Enter purchase amount: </label>
+              <div style={{display:'flex', height:'30px', alignItems:'center', gap:'3px'}}>
+                <p>$</p>
+                <input required style={{outline: 'none', borderRadius: '5px', border: 'none', padding: '5px', backgroundColor: '#666'}} type="number" onChange={(e) => {let inputValue = e.target.value; inputValue = inputValue.replace(/-/g, '');  inputValue = inputValue.replace(/(\.\d{2})\d+$/, '$1'); e.target.value = inputValue}} pattern="[0-9]*[.,]?[0-9]+" title="Please enter a valid number" className='add-expense-input-field' name='expenseAmount'/> 
+              </div>
+              
 
-              <label htmlFor="date">Enter date of purchase: $</label>
-              <input style={{outline:'none', borderRadius:'5px', border: 'none', padding:'5px'}} type="date" name='expenseDate'/>
+              <label htmlFor="date">Enter date of purchase:</label>
+              <input style={{outline:'none', borderRadius:'5px', border: 'none', padding:'5px', backgroundColor: '#666'}} className='add-expense-input-field' type="date" name='expenseDate'/>
 
-              <label htmlFor="expense-category">Select purchase category: $</label>
-              <select required style={{outline:'none', borderRadius:'5px', border: 'none', padding:'5px'}} name="expenseCategory">
+              <label htmlFor="expense-category">Select purchase category:</label>
+              <select required style={{outline:'none', borderRadius:'5px', border: 'none', padding:'5px'}} className='add-expense-input-field' name="expenseCategory">
                 <option value="" disabled>Category</option>
                 <option value="food">Food</option>
                 <option value="transportation">Transportation</option>
@@ -98,14 +105,14 @@ const HomePage = () => {
                 <option value="others">Others</option>
               </select>
 
-              <input style={{cursor:'pointer'}} type="submit" value="Submit" className='expense-submit-button'/>
+              <input style={{cursor:'pointer', marginTop:'5px'}} type="submit" value="Submit" className='expense-submit-button'/>
             </form>
           </div>
         </div>
         
       </div>
       <div style={{marginTop:'8px', marginBottom:'5px'}}>
-        <Link><button className='budget-optimization-button'>Budget Optimization</button></Link>
+        <Link to='/budget-optimization'><button className='budget-optimization-button'>Click For Budget Optimization</button></Link>
       </div>
     
       

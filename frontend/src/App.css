@@ -164,11 +164,22 @@ a{
   border: 2px solid #ff6f61;
   border-radius: 5px;
   color: white;
+
 }
 
 
+.add-expense-input-field{
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  box-sizing: border-box;
+  background-color: #666;
+  color: white;
+  outline: none;
+  border: none;
+}
 
-.budget-optimization-button{
+.budget-optimization-button, .more-category-info-button{
   width: fit-content;
   height: 35px;
   border-radius: 5px;
@@ -179,7 +190,7 @@ a{
   transition: background-color .15s, color .15s;
 }
 
-.budget-optimization-button:hover{
+.more-category-info-button:hover, .budget-optimization-button:hover{
   background-color: black;
   color: white;
 }
