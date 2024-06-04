@@ -1,13 +1,13 @@
-import React, { useContext, useEffect, useState } from 'react'
-import AuthContext from '../context/AuthContext'
 import axios from 'axios'
-import PieChart from '../components/PieChart'
-import LineGraph from '../components/LineGraph'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import LineGraph from '../components/LineGraph'
+import PieChart from '../components/PieChart'
+import useAuthContext from '../hooks/useAuthContext'
 
 const HomePage = () => {
-  const [expenses, setExpenses] = useState([])
-  const {authTokens, logoutUser} = useContext(AuthContext)
+  const [expenses, setExpenses] = useState([]);
+  const {user, authTokens, logoutUser} = useAuthContext();
   let expensesTotal = 0
 
   const getExpenses = async () => {
@@ -20,17 +20,16 @@ const HomePage = () => {
       setExpenses(response.data)
     }).catch(error => {
       console.error(error)
+      console.log('logout called from homepage getExpenses');
       logoutUser()
     })
   }
-
   const createExpense = async (event) => {
     event?.preventDefault();
-    console.log('create expense method called');
     axios.post('http://127.0.0.1:8000/api/create-expense/', {
     'expense': event?.target.elements.expenseAmount.value,
     'expense_category': event?.target.elements.expenseCategory.value,
-    'date': '1969-05-05'
+    'date': event?.target.elements.expenseDate.value
   }, {
     headers: {
         'Content-Type': 'application/json',
@@ -44,21 +43,15 @@ const HomePage = () => {
   });
   }
 
-  const formatDate = (dateStr) => {
-    const [month, day, year] = dateStr.split('-');
-    const formattedDate = new Date(`${year}-${month}-${day}`);
-    const yyyy_mm_dd = formattedDate.toISOString().split('T')[0];
-    console.log(yyyy_mm_dd);
-    return yyyy_mm_dd;
-  };
-
   expenses.map(expense => {
      expensesTotal += parseFloat(expense.expense)
   })
 
   useEffect(() => {
-    getExpenses()
-  }, [])
+    if (user) {
+      getExpenses()
+    }
+  }, [user])
 
   return (
     <div className='dashboard-div'>
@@ -71,7 +64,7 @@ const HomePage = () => {
             {/* make this div a link so that when it is clicked it takes you to expenses page wher u can delete/edit an expense */}
             <PieChart expenses={expenses}/>
             <h3>Total: ${expensesTotal.toFixed(2)}</h3>
-            <Link><button className='more-category-info-button'>More Category Info</button></Link>
+            <Link to='more-category-info'><button className='more-category-info-button'>More Category Info</button></Link>
           </div>
           <div className='line-graph-div'>
             <LineGraph/>
@@ -85,7 +78,7 @@ const HomePage = () => {
               <label htmlFor="number">Enter purchase amount: </label>
               <div style={{display:'flex', height:'30px', alignItems:'center', gap:'3px'}}>
                 <p>$</p>
-                <input required style={{outline: 'none', borderRadius: '5px', border: 'none', padding: '5px', backgroundColor: '#666'}} type="number" onChange={(e) => {let inputValue = e.target.value; inputValue = inputValue.replace(/-/g, '');  inputValue = inputValue.replace(/(\.\d{2})\d+$/, '$1'); e.target.value = inputValue}} pattern="[0-9]*[.,]?[0-9]+" title="Please enter a valid number" className='add-expense-input-field' name='expenseAmount'/> 
+                <input required style={{outline: 'none', borderRadius: '5px', border: 'none', padding: '5px', backgroundColor: '#666'}} type="number" step="0.01" className='add-expense-input-field' name='expenseAmount'/> 
               </div>
               
 

@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from .serializers import ExpenseSerializer, ExpenseCategorySerializer
+from .serializers import ExpenseSerializer, ExpenseCategorySerializer, UserSerializer
 from base.models import ExpenseCategory, Expense
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -32,6 +32,15 @@ def getRoutes(request):
   ]
   return JsonResponse(routes, safe=False)
 
+@api_view(['POST'])
+def userRegistration(request):
+  serializer = UserSerializer(data=request.data)
+  if serializer.is_valid():
+    # call validate_password method
+    serializer.save()
+    return Response(serializer.data, status=status.HTTP_201_CREATED)
+  return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def getExpenses(request):
@@ -54,3 +63,6 @@ def createExpense(request):
   )
   serializer = ExpenseSerializer(expense)
   return Response({"message": "Expense created successfully", "expense": serializer.data}, status=status.HTTP_201_CREATED)
+
+
+   

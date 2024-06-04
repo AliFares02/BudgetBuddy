@@ -1,28 +1,27 @@
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import './App.css';
 import Header from './components/Header';
+import useAuthContext from './hooks/useAuthContext';
+import BudgetOptimizationPage from './pages/BudgetOptimizationPage';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import PrivateRoute from './utils/PrivateRoute';
-import { AuthProvider } from './context/AuthContext';
-import BudgetOptimizationPage from './pages/BudgetOptimizationPage';
-
+import MoreCategoryInfoPage from './pages/MoreCategoryInfoPage';
+import NotFoundPage from './pages/NotFoundPage';
+import SignUpPage from './pages/SignUpPage';
 
 function App() {
+  const {user} = useAuthContext()
   return (
     <div className="App">
-      <BrowserRouter>
-        <AuthProvider>
-          <Header/>
-           
-              <Routes>
-                <Route path='/login' element={<LoginPage/>}/>
-                <Route path='/' element={<PrivateRoute><HomePage/></PrivateRoute>}/>
-                <Route path='/budget-optimization' element={<PrivateRoute><BudgetOptimizationPage/></PrivateRoute>}/>
-              </Routes>
-          
-        </AuthProvider> 
-      </BrowserRouter>
+        <Header/>
+          <Routes>
+            <Route path='/sign-up' element={!user ? <SignUpPage/> : <Navigate to='/'/>}/>
+            <Route path='/login' element={!user ? <LoginPage/> : <Navigate to='/'/>}/>
+            <Route path='/' element={user ? <HomePage/> : <Navigate to='/login'/>}/>
+            <Route path='/budget-optimization' element={user ? <BudgetOptimizationPage/> : <Navigate to='/login'/>}/>
+            <Route path='/more-category-info' element={user ? <MoreCategoryInfoPage/> : <Navigate to='/login'/>}/>
+            <Route path="*" element={<NotFoundPage />}/>
+          </Routes>
     </div>
   );
 }

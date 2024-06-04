@@ -1,11 +1,11 @@
-import React, { useContext, useEffect } from 'react'
-import { Pie } from 'react-chartjs-2'
-import {Chart, ArcElement} from 'chart.js'
-import AuthContext from '../context/AuthContext';
+import { ArcElement, Chart } from 'chart.js';
+import React, { useEffect } from 'react';
+import { Pie } from 'react-chartjs-2';
+import useAuthContext from '../hooks/useAuthContext';
 Chart.register(ArcElement);
 
 const PieChart = ({expenses}) => {
-  const {sharedCategArray, setSharedCategArray} = useContext(AuthContext)
+  const {sharedCategArray, setSharedCategArray} = useAuthContext()
   const expenseCategoriesForPieChart = []
   const expenseCategoryColorsForPieChart = []
   const expenseCategoryAmountForPieChart = []

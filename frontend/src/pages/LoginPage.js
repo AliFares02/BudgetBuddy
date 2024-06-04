@@ -1,15 +1,36 @@
-import React, { useContext } from 'react'
-import AuthContext from '../context/AuthContext'
+import React, { useState } from 'react'
+import { useLogin } from '../hooks/useLogin'
 
 const LoginPage = () => {
-  const {loginUser} = useContext(AuthContext);
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const {loginUser, error, isLoading} = useLogin()
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+
+    await loginUser(username, password);
+  }
   return (
     <div className='login-form-div'>
-      <form onSubmit={loginUser} className='login-form'>
+      <form onSubmit={handleSubmit} className='login-form' >
         <h3>Login</h3>
-        <input type="text" name="username" placeholder='Enter username...' className='input-field'/>
-        <input type="password" name="password" placeholder='Enter password...' className='input-field'/>
-        <input type="submit" className='submit-button'/>
+        <input 
+            className='input-field'
+            type="text" 
+            placeholder="Enter Username..." 
+            onChange={(e) => setUsername(e.target.value)} 
+            value={username}
+        />
+        <input
+            className='input-field' 
+            type="password" 
+            placeholder="Enter Password..." 
+            onChange={(e) => setPassword(e.target.value)} 
+            value={password}
+        />
+        <button disabled={isLoading} type="submit" className='submit-button'>Log in</button>
+        {error && <div className='error'>{error}</div>}
       </form>
     </div>
   )
