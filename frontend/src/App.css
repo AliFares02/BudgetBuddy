@@ -294,3 +294,7 @@ a{
   background-color: #ff6f61;
   transition: background-color .15s, color .15s;
 }
+.budget-optimization-btn:hover{
+  background-color:black;
+  color: white;
+}

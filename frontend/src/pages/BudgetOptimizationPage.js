@@ -9,7 +9,7 @@ const BudgetOptimizationPage = () => {
   const [inflationResponse, setInflationResponse] = useState([])
   console.log("sharedCategArray: ", sharedCategArray);
   const [localSharedCategArray, setLocalSharedCategArray] = useState([]);
-  const inflationDataBySeriesId = []
+  const inflationDataBySeriesId = [];
 
   useEffect(() => {
     const storedCategArray = JSON.parse(localStorage.getItem('sharedCategArray'));
@@ -95,9 +95,29 @@ const BudgetOptimizationPage = () => {
           console.log(CPIAverage);
           const currentMonthsCPIPrediction = inflationData[0]?.value - CPIAverage;
           const nextMonthsCPIPrediction = currentMonthsCPIPrediction - CPIAverage;
-          const currentMonthIAF = ((currentMonthsCPIPrediction - inflationData[0]?.value)/inflationData[0]?.value) * 100;
-          const nextMonthIAF = ((nextMonthsCPIPrediction - currentMonthsCPIPrediction)/currentMonthsCPIPrediction) * 100;
-          inflationDataBySeriesId[i].twoMonthIAFPrediction.push(currentMonthIAF, nextMonthIAF) 
+          const currentMonthIAF = 1 + ((((currentMonthsCPIPrediction - inflationData[0]?.value)/inflationData[0]?.value) * 100) / 100);
+          const nextMonthIAF = 1 + ((((nextMonthsCPIPrediction - currentMonthsCPIPrediction)/currentMonthsCPIPrediction) * 100) / 100);
+          inflationDataBySeriesId[i].twoMonthIAFPrediction.push(currentMonthIAF, nextMonthIAF)
+          
+          // calculating budget adjustments for each expense category
+          const categoryArray = sharedCategArray.length > 0 ? sharedCategArray : localSharedCategArray;
+
+          let relevantCategory = null;
+          Object.entries(seriesIds).forEach(([key, value]) => {
+            if (value === result.seriesID) {
+              relevantCategory = key;
+            }
+          })
+          console.log("relevant category for this seriesid: ", relevantCategory);
+          if (relevantCategory) {
+            for (let k = 0; k < categoryArray.length; k++) {
+              if (categoryArray[k].expenseCategory === relevantCategory) {
+                categoryArray[k].currentMonthExpenseBudgetAmount = Number((categoryArray[k].expenseAmount * currentMonthIAF).toFixed(2));
+                categoryArray[k].nextMonthExpenseBudgetAmount = Number((categoryArray[k].expenseAmount * nextMonthIAF).toFixed(2));
+              }
+            }
+            console.log("in method categoryArray", categoryArray);
+          }
       }
       console.log("inflationDataBySeriesId: ", inflationDataBySeriesId);
     } else {
@@ -114,32 +134,9 @@ const BudgetOptimizationPage = () => {
 
   function handleButtonClick() {
     setButtonClicked(true);
-    // rotateLoadingText();
     fetchInflationData();
-    const data = [{
-      seriesID: 'CUSR0000SAF', 
-      data:[
-        {year: '2024', period: 'M04', periodName: 'April', latest: 'true', value: '325.706'},
-        {year: '2024', period: 'M03', periodName: 'March', value: '325.645'},
-        {year: '2024', period: 'M02', periodName: 'February', value: '325.318'},
-        {year: '2024', period: 'M01', periodName: 'January', value: '325.265'},
-        {year: '2023', period: 'M12', periodName: 'December', value: '324.029'},
-        {year: '2023', period: 'M11', periodName: 'November', value: '323.376'}
-      ]
-    }]
-    
   }
     
-  // function rotateLoadingText(i=0) {
-  //   if (i < loadingTexts.length) {
-  //     setLoadingTextDisplayed(loadingTexts[i]);
-  //     setTimeout(() => rotateLoadingText(i + 1), 5000);
-  //   } else {
-  //     rotateLoadingText(0)
-  //   }
-  // };
-    
-  
   return (
     <div className='budget-optimization-container'>
       {
