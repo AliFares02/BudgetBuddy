@@ -43,6 +43,24 @@ const HomePage = () => {
   });
   }
 
+  function handleDataFilter(event) {
+    event.preventDefault();
+    const numOfDaysBack = event?.target.elements['time-range'].value;
+    axios.get('http://127.0.0.1:8000/api/filtered-expenses/', {
+      headers: {
+        'Authorization': 'Bearer ' + String(authTokens.access)
+      },
+      params:{
+        'date': numOfDaysBack
+      }
+    })
+    .then(response => setExpenses(response.data)
+    // cache expenses in localstorage in this method and in getExpenses() so when user comes back to dashboard it still shows filtered data and doesnt reset to getExpenses() data
+    )
+    .catch(error => console.error(error)
+    )
+  }
+
   expenses.map(expense => {
      expensesTotal += parseFloat(expense.expense)
   })
@@ -58,6 +76,16 @@ const HomePage = () => {
       <div>
         <h1 style={{color:'white'}}>Dashboard</h1>
       </div>
+      <form onSubmit={handleDataFilter} className='time-range-container'>
+        <label htmlFor="time-range">Expense Time Range:</label>
+        <select name="time-range" id="time-range">
+          <option value="30">30 days</option>
+          <option value="180">6 months</option>
+          <option value="365">1 year</option>
+          <option value="all">All time</option>
+        </select>
+        <button type='submit'>Apply</button>
+      </form>
       <div className='dashboard-content-container' style={{display:'flex', justifyContent:'center', alignItems:'center', flexDirection:'column', gap:'8px'}}>
         <div className='graph-div' style={{display:'flex', gap:'8px'}}>
           <div className='pie-div'>

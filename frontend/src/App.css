@@ -144,7 +144,35 @@ a{
   flex-direction: column;
   justify-content:space-between;
   align-items: center;
+  gap: 10px;
 }
+.time-range-container{
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: white;
+}
+.time-range-container select {
+  outline: none;
+  height: 25px;
+  border-radius: 7px;
+  cursor: pointer;
+}
+.time-range-container button {
+  width: 65px;
+  height: 25px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  background-color: #ff6f61;
+  transition: background-color .15s, color .15s;
+}
+.time-range-container button:hover{
+  background-color:black;
+  color: white;
+}
+
 
 @media screen and (max-width: 775px) {
   .graph-div {
