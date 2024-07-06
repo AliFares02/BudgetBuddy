@@ -1,52 +1,106 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react';
 import { Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
   LineElement,
-  CategoryScale, // x axis
-  LinearScale, // y axis
+  CategoryScale,
+  LinearScale,
   PointElement,
   Legend,
   Tooltip,
-  Filler 
+  Filler,
 } from 'chart.js';
 
 ChartJS.register(
   LineElement,
   CategoryScale,
-  LinearScale, 
+  LinearScale,
   PointElement,
   Legend,
   Tooltip,
-  Filler 
-)
+  Filler
+);
 
-const LineGraph = () => {
+const LineGraph = ({ expenses, timeRange }) => {
+  const [xAxisLabels, setXAxisLabels] = useState([]);
+  const [expenseData, setExpenseData] = useState([]);
+  const [yAxisStep, setYAxisStep] = useState(7);
+
+  useEffect(() => {
+    function handleAxis() {
+      let maxExpense = parseFloat(expenses[0]?.expense);
+      const tempExpenseData = [];
+      const tempXAxisLabels = [];
+
+      for (let i = 0; i < expenses.length; i++) {
+        tempExpenseData.push(parseFloat(expenses[i].expense));
+        tempXAxisLabels.push(expenses[i].expense_date);
+        if (parseFloat(expenses[i]?.expense) > maxExpense) {
+          maxExpense = parseFloat(expenses[i].expense);
+        }
+      }
+
+      setYAxisStep(Math.ceil(maxExpense / 7));
+      setExpenseData(tempExpenseData);
+      setXAxisLabels(tempXAxisLabels);
+
+      console.log('step count', Math.ceil(maxExpense / 7));
+      console.log('expenseData', tempExpenseData);
+      console.log('xAxisLabels', tempXAxisLabels);
+    }
+
+    handleAxis();
+  }, [expenses]);
+
+  console.log('expenses from line graph', expenses);
+  console.log('expenseData used for chart', expenseData);
+
   const data = {
-    labels: ['Mon', 'Tue', 'Wed'],
+    labels: xAxisLabels,
     datasets: [
       {
-        label: 'Expenses for the past 30 days',
-        data: [30, 13, 34],
+        label: `Expense amount`,
+        data: expenseData,
         backgroundColor: '#ff6f61',
         borderColor: 'black',
         pointBorderColor: 'white',
         fill: 'origin',
-        tension: .1,
-        borderWidth: 1
-      }
-    ]
-  }
+        tension: 0.3,
+        borderWidth: 1.5,
+      },
+    ],
+  };
 
   const options = {
     plugins: {
-      legend: true,
+      tooltip: {
+        callbacks: {
+          label: function (context) {
+            let label = data.datasets[context.datasetIndex].label || '';
+
+            if (label) {
+              label += ': ';
+            }
+            if (context.parsed.y !== null) {
+              label += new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+              }).format(context.parsed.y);
+            }
+            const dateLabel = xAxisLabels[context.dataIndex];
+            if (dateLabel) {
+              label += ` (${dateLabel})`;
+            }
+            return label;
+          },
+        },
+      },
       title: {
         display: true,
         text: 'Line Chart Example',
-        color: 'white', // Set title text color
+        color: 'white',
         font: {
-          family: 'Lexend', // Set title font family
+          family: 'Lexend',
           size: 20,
           weight: 'bold',
         },
@@ -54,9 +108,9 @@ const LineGraph = () => {
       legend: {
         display: true,
         labels: {
-          color: 'white', // Set legend text color
+          color: 'white',
           font: {
-            family: 'Lexend', // Set legend font family
+            family: 'Lexend',
             size: 12,
           },
         },
@@ -66,18 +120,19 @@ const LineGraph = () => {
       y: {
         beginAtZero: true,
         ticks: {
-          color: 'white', // Set y-axis label text color
+          stepSize: yAxisStep,
+          color: 'white',
           font: {
-            family: 'Lexend', // Set y-axis label font family
+            family: 'Lexend',
             size: 12,
           },
         },
       },
       x: {
         ticks: {
-          color: 'white', // Set x-axis label text color
+          color: 'white',
           font: {
-            family: 'Lexend', // Set x-axis label font family
+            family: 'Lexend',
             size: 12,
           },
         },
@@ -93,12 +148,13 @@ const LineGraph = () => {
     },
     responsive: true,
     maintainAspectRatio: false,
-  }
+  };
+
   return (
     <div style={{ width: '350px', height: '350px' }}>
-      <Line data={data} options={options}/>
+      <Line data={data} options={options} />
     </div>
-  )
-}
+  );
+};
 
-export default LineGraph
+export default LineGraph;

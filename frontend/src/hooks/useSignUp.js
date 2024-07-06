@@ -20,8 +20,11 @@ export const useSignUp = () => {
       navigate('/login')
       console.log(response);
     }).catch(error => {
+      console.error('error...', error?.response?.data?.password);
       setIsLoading(false)
-      setError(error)
+      setError(() => {
+        return error?.response?.data?.password || error?.response?.data?.username
+      })
       console.error(error);
     })
   }

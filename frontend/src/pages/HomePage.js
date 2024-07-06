@@ -7,6 +7,7 @@ import useAuthContext from '../hooks/useAuthContext'
 
 const HomePage = () => {
   const [expenses, setExpenses] = useState([]);
+  const [timeRange, setTimeRange] = useState('all');
   const {user, authTokens, logoutUser} = useAuthContext();
   let expensesTotal = 0
 
@@ -45,7 +46,11 @@ const HomePage = () => {
 
   function handleDataFilter(event) {
     event.preventDefault();
-    const numOfDaysBack = event?.target.elements['time-range'].value;
+    const selectElem = event?.target.elements['time-range'];
+    const numOfDaysBack = selectElem?.value;
+    const numOfDaysBackName = selectElem.options[selectElem.selectedIndex].getAttribute('name');
+    setTimeRange(numOfDaysBackName)
+    console.log('time range...', timeRange);
     axios.get('http://127.0.0.1:8000/api/filtered-expenses/', {
       headers: {
         'Authorization': 'Bearer ' + String(authTokens.access)
@@ -76,31 +81,45 @@ const HomePage = () => {
       <div>
         <h1 style={{color:'white'}}>Dashboard</h1>
       </div>
-      <form onSubmit={handleDataFilter} className='time-range-container'>
-        <label htmlFor="time-range">Expense Time Range:</label>
-        <select name="time-range" id="time-range">
-          <option value="30">30 days</option>
-          <option value="180">6 months</option>
-          <option value="365">1 year</option>
-          <option value="all">All time</option>
-        </select>
-        <button type='submit'>Apply</button>
-      </form>
+      
       <div className='dashboard-content-container' style={{display:'flex', justifyContent:'center', alignItems:'center', flexDirection:'column', gap:'8px'}}>
-        <div className='graph-div' style={{display:'flex', gap:'8px'}}>
-          <div className='pie-div'>
-            {/* make this div a link so that when it is clicked it takes you to expenses page wher u can delete/edit an expense */}
-            <PieChart expenses={expenses}/>
-            <h3>Total: ${expensesTotal.toFixed(2)}</h3>
-            <Link to='more-category-info'><button className='more-category-info-button'>More Category Info</button></Link>
+        {
+          expenses.length > 0 
+          ? 
+          (
+          <>
+            <form onSubmit={handleDataFilter} className='time-range-container'>
+              <label htmlFor="time-range">Expense Time Range:</label>
+              <select defaultValue='all' name="time-range" id="time-range">
+                <option name="30 days" value="30">30 days</option>
+                <option name="6 months" value="180">6 months</option>
+                <option name="1 year" value="365">1 year</option>
+                <option name="all time" value="all">All time</option>
+              </select>
+              <button type='submit'>Apply</button>
+            </form>
+            <div className='graph-div' style={{display:'flex', gap:'8px'}}>
+            <div className='pie-div'>
+              {/* make this div a link so that when it is clicked it takes you to expenses page wher u can delete/edit an expense */}
+              <PieChart expenses={expenses}/>
+              <h3>Total: ${expensesTotal.toFixed(2)}</h3>
+              <Link to='more-category-info'><button className='more-category-info-button'>More Category Info</button></Link>
+            </div>
+            <div className='line-graph-div'>
+              <LineGraph expenses={expenses} timeRange={timeRange}/>
+              <Link><button className='more-category-info-button'>More Expense History Info</button></Link>
+            </div>
           </div>
-          <div className='line-graph-div'>
-            <LineGraph/>
-            <Link><button className='more-category-info-button'>More Expense History Info</button></Link>
-          </div>
-        </div>
+          </>
+          )
+          :
+          (
+            <div className='no-expenses-display'><h2>You have no expenses to be displayed. Begin by adding expenses below</h2></div>
+          )
+        }
+        
         <div className='add-expense-div'>
-          <div style={{display:'flex', alignItems:'center', flexDirection:'column', gap:'5px'}}>
+          <div style={{display:'flex', alignItems:'center', flexDirection:'column', gap:'3px'}}>
             <label htmlFor='add-expense-form' style={{fontWeight:'bold', fontSize:'18px'}}>Add expense</label>
             <form className='add-expense-form' onSubmit={(e) => createExpense(e)}>
               <label htmlFor="number">Enter purchase amount: </label>
@@ -126,15 +145,26 @@ const HomePage = () => {
                 <option value="others">Others</option>
               </select>
 
-              <input style={{cursor:'pointer', marginTop:'5px'}} type="submit" value="Submit" className='expense-submit-button'/>
+              <input style={{cursor:'pointer'}} type="submit" value="Submit" className='expense-submit-button'/>
             </form>
           </div>
         </div>
         
       </div>
-      <div style={{marginTop:'8px', marginBottom:'5px'}}>
-        <Link to='/budget-optimization'><button className='budget-optimization-button'>Click For Budget Optimization</button></Link>
-      </div>
+      {
+        expenses.length > 0 
+        ?
+        ( 
+        <div style={{marginTop:'8px', marginBottom:'5px'}}>
+          <Link to='/budget-optimization'><button className='budget-optimization-button'>Click For Budget Optimization</button></Link>
+        </div>
+        )
+        :
+        (
+          <></>
+        )
+      }
+      
     
       
     </div>

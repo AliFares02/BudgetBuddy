@@ -20,7 +20,7 @@ function App() {
             <Route path='/' element={user ? <HomePage/> : <Navigate to='/login'/>}/>
             <Route path='/budget-optimization' element={user ? <BudgetOptimizationPage/> : <Navigate to='/login'/>}/>
             <Route path='/more-category-info' element={user ? <MoreCategoryInfoPage/> : <Navigate to='/login'/>}/>
-            <Route path="*" element={<NotFoundPage />}/>
+            <Route path="*" element={user ? <NotFoundPage /> : <Navigate to='/'/>}/>
           </Routes>
     </div>
   );
