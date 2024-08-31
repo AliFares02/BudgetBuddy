@@ -2,13 +2,15 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import useAuthContext from '../hooks/useAuthContext';
 import { Ring } from 'react-spinners-css';
+import LineGraph from '../components/LineGraph';
+import BudgetOptLineGraph from '../components/BudgetOptLineGraph';
 
 const BudgetOptimizationPage = () => {
   const { sharedCategArray, setSharedCategArray } = useAuthContext();
   const [buttonClicked, setButtonClicked] = useState(false);
-  const [inflationResponse, setInflationResponse] = useState([])
-  console.log("sharedCategArray: ", sharedCategArray);
   const [localSharedCategArray, setLocalSharedCategArray] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [lineGraphData, setLineGraphData] = useState([]);
   const inflationDataBySeriesId = [];
 
   useEffect(() => {
@@ -56,7 +58,8 @@ const BudgetOptimizationPage = () => {
   };
 
   function fetchInflationData () {
-    console.log("fetch inflationdata called");
+    setButtonClicked(true)
+    setIsLoading(true);
     axios.post('http://127.0.0.1:8000/api/inflation-data/', {
       seriesid: seriesIdsRelevant,
       startyear: "2023",
@@ -69,11 +72,12 @@ const BudgetOptimizationPage = () => {
     .then(response => {
       console.log('inflation data ', response?.data?.Results);
       calculateBudget(response?.data?.Results?.series)
-      setButtonClicked(false);
+      console.log('button status', buttonClicked);
+      setIsLoading(false);
     })
     .catch(error => {
       console.error('Error!', error);
-      setButtonClicked(false);
+      setIsLoading(false);
     });
   };
 
@@ -116,9 +120,11 @@ const BudgetOptimizationPage = () => {
                 categoryArray[k].nextMonthExpenseBudgetAmount = Number((categoryArray[k].expenseAmount * nextMonthIAF).toFixed(2));
               }
             }
+            setLineGraphData(categoryArray)
             console.log("in method categoryArray", categoryArray);
           }
       }
+      
       console.log("inflationDataBySeriesId: ", inflationDataBySeriesId);
     } else {
       console.log("results.length not greater than 0");
@@ -133,23 +139,28 @@ const BudgetOptimizationPage = () => {
   }, [localSharedCategArray]);
 
   function handleButtonClick() {
-    setButtonClicked(true);
-    fetchInflationData();
+    fetchInflationData()
   }
     
   return (
     <div className='budget-optimization-container'>
       {
-        buttonClicked 
-        ?
-        (
-          <div style={{display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center'}}>
-            <Ring color='#ff6f61'/>
-            <p style={{fontSize:'18px', color:'white', textAlign:'center'}}>In progress...should take less than 30 seconds</p>
-          </div>
+        buttonClicked ? (
+          isLoading ? (
+            <div style={{display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center'}}>
+              <Ring color='#ff6f61'/>
+              <p style={{fontSize:'18px', color:'white', textAlign:'center'}}>In progress...should take less than 30 seconds</p>
+            </div>
+          )
+          :
+          (
+            <div>
+              <BudgetOptLineGraph lineGraphData={lineGraphData}/>
+            </div>
+          )
         )
         :
-        <button className='budget-optimization-btn' onClick={handleButtonClick} disabled={buttonClicked} style={{cursor: buttonClicked ? 'progress' : 'pointer'}}>Click to begin budget optimization process</button>
+        <button className='budget-optimization-btn' onClick={() => handleButtonClick()} disabled={buttonClicked} style={{cursor: buttonClicked ? 'progress' : 'pointer'}}>Click to begin budget optimization process</button>
       }
     </div>
   );

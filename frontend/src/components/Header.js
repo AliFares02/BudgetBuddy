@@ -21,7 +21,7 @@ const Header = () => {
         (
           <div>
            <p style={{color:'#ff6f61', marginLeft:'5px', marginRight:'10px'}}>Hello, {user.username}</p>
-           <button onClick={handleClick}>Log out</button>
+           <button className='logout-btn' onClick={handleClick}>Log out</button>
           </div>
         )
         :

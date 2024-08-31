@@ -106,7 +106,7 @@ const HomePage = () => {
               <Link to='more-category-info'><button className='more-category-info-button'>More Category Info</button></Link>
             </div>
             <div className='line-graph-div'>
-              <LineGraph expenses={expenses} timeRange={timeRange}/>
+              <LineGraph expenses={expenses}/>
               <Link><button className='more-category-info-button'>More Expense History Info</button></Link>
             </div>
           </div>

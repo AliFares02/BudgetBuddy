@@ -21,46 +21,27 @@ ChartJS.register(
   Filler
 );
 
-const LineGraph = ({ expenses }) => {
-  const [xAxisLabels, setXAxisLabels] = useState([]);
-  const [expenseData, setExpenseData] = useState([]);
+const BudgetOptLineGraph = ({ lineGraphData }) => {
   const [yAxisStep, setYAxisStep] = useState(7);
+  const [categoryData, setCategoryData] = useState([]);
 
   useEffect(() => {
     function handleAxis() {
-      let maxExpense = parseFloat(expenses[0]?.expense);
-      const tempExpenseData = [];
-      const tempXAxisLabels = [];
+      console.log('inflationDataBySeriesId from budgetoptlinegraph', lineGraphData);
+      for (let i = 0; i < lineGraphData.length; i++) {
 
-      for (let i = 0; i < expenses.length; i++) {
-        tempExpenseData.push(parseFloat(expenses[i].expense));
-        tempXAxisLabels.push(expenses[i].expense_date);
-        if (parseFloat(expenses[i]?.expense) > maxExpense) {
-          maxExpense = parseFloat(expenses[i].expense);
-        }
       }
-
-      setYAxisStep(Math.ceil(maxExpense / 7));
-      setExpenseData(tempExpenseData);
-      setXAxisLabels(tempXAxisLabels);
-
-      console.log('step count', Math.ceil(maxExpense / 7));
-      console.log('expenseData', tempExpenseData);
-      console.log('xAxisLabels', tempXAxisLabels);
     }
 
     handleAxis();
-  }, [expenses]);
-
-  console.log('expenses from line graph', expenses);
-  console.log('expenseData used for chart', expenseData);
+  }, [lineGraphData]);
 
   const data = {
-    labels: xAxisLabels,
+    labels: ['transportation', 'food', 'housing', 'others'],
     datasets: [
       {
         label: `Expense amount`,
-        data: expenseData,
+        data: [123, 45, 222, 124],
         backgroundColor: '#ff6f61',
         borderColor: 'black',
         pointBorderColor: 'white',
@@ -73,28 +54,6 @@ const LineGraph = ({ expenses }) => {
 
   const options = {
     plugins: {
-      tooltip: {
-        callbacks: {
-          label: function (context) {
-            let label = data.datasets[context.datasetIndex].label || '';
-
-            if (label) {
-              label += ': ';
-            }
-            if (context.parsed.y !== null) {
-              label += new Intl.NumberFormat('en-US', {
-                style: 'currency',
-                currency: 'USD',
-              }).format(context.parsed.y);
-            }
-            const dateLabel = xAxisLabels[context.dataIndex];
-            if (dateLabel) {
-              label += ` (${dateLabel})`;
-            }
-            return label;
-          },
-        },
-      },
       title: {
         display: true,
         text: 'Line Chart Example',
@@ -120,7 +79,6 @@ const LineGraph = ({ expenses }) => {
       y: {
         beginAtZero: true,
         ticks: {
-          stepSize: yAxisStep,
           color: 'white',
           font: {
             family: 'Lexend',
@@ -157,4 +115,4 @@ const LineGraph = ({ expenses }) => {
   );
 };
 
-export default LineGraph;
+export default BudgetOptLineGraph;

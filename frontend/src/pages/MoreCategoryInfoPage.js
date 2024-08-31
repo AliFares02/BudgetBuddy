@@ -120,7 +120,7 @@ const MoreCategoryInfoPage = () => {
             </div>
             {dropDownStates[index] &&
               <div 
-                style={{ margin: '5px', height: 'auto', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
+                style={{ margin: '5px', height: 'auto', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap:'8px' }}
               >
                 {obj.value.map((expense) => (
                   <div className='expense-del-edit' key={expense.id}>
@@ -135,13 +135,14 @@ const MoreCategoryInfoPage = () => {
                           onChange={(e) => setUpdatedExpense(e.target.value)} 
                           value={updatedExpense || expense.expense} 
                           type="number" 
-                          style={{outline: 'none', borderRadius: '5px', border: 'none', padding: '5px', backgroundColor: '#666', color:'white'}} step={.01} 
+                          style={{outline: 'none', borderRadius: '5px', border: 'none', padding: '5px', backgroundColor: '#666', color:'white', width:`${(updatedExpense || expense.expense).toString().length * 10}px`}} 
+                          step={.01} 
                         />
                         <input 
                           onChange={(e) => setUpdatedExpenseDate(e.target.value)} 
                           value={updatedExpenseDate || expense.expense_date} 
                           type="date" 
-                          style={{outline: 'none', borderRadius: '5px', border: 'none', padding: '5px', backgroundColor: '#666', color:'white'}}
+                          style={{outline: 'none', borderRadius: '5px', border: 'none', padding: '5px', backgroundColor: '#666', color:'white', width:`${(updatedExpenseDate || expense.expense_date).toString().length * 10}px`}}
                         />
                         <FaRegCheckCircle 
                           size={21} 
